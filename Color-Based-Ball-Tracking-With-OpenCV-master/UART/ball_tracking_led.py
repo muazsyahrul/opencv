@@ -23,7 +23,7 @@ cv2.createTrackbar("VALUE Max", "HSV", 255, 255, empty)
 cv2.waitKey(1)
 
 # Configure serial communication with Arduino
-arduino = serial.Serial("/dev/ttyUSB0", 9600, timeout=1)
+arduino = serial.Serial("/dev/ttyACM0", 9600, timeout=1)
 time.sleep(0.1)  # Wait for serial to open
 
 while True:
@@ -85,11 +85,20 @@ while True:
                 else:
                     position_text = "Center"
                     arduino_command = "led_both"
+            else:
+                # No ball detected, turn off both LEDs
+                arduino_command = "led0"
+        else:
+            # No ball detected, turn off both LEDs
+            arduino_command = "led0"
+    else:
+        # No ball detected, turn off both LEDs
+        arduino_command = "led0"
 
-                # Send the command to Arduino
-                arduino.write(arduino_command.encode())
+    # Send the command to Arduino
+    arduino.write(arduino_command.encode())
 
-                cv2.putText(frame, f"Position: {position_text}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+    cv2.putText(frame, f"Position: {position_text}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
     
     cv2.imshow("Frame", frame)
     cv2.imshow('Mask', mask)
